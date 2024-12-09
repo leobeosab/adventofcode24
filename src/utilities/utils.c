@@ -1,11 +1,9 @@
 #include <stdio.h>
+#include <assert.h>
 #define BUFF_SIZE 65536
 
 int linesInFile(FILE *fp) {
-    if (fp == NULL) {
-        printf("File isn't open \n");
-        return -1;
-    }
+    assert(fp != NULL);
 
     // make sure fp is at the start
     rewind(fp);
@@ -34,4 +32,11 @@ int linesInFile(FILE *fp) {
     rewind(fp);
 
     return count;
+}
+
+void printArr(int* arr, size_t size) {
+    for ( int i = 0; i < size; i++ ) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
 }

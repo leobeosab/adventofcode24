@@ -4,5 +4,6 @@
 #include <stdio.h>
 
 int linesInFile(FILE *fp);
+void printArr(int* arr, size_t size);
 
 #endif
