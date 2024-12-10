@@ -146,8 +146,8 @@ int findPath( int index, int target, TrailMap* map, int* foundEndpoints, int* fo
     int score = 0;
     for ( int i = 0; i < pathCount; i++ ) {
         if ( target == 9 && intNotInArr(foundEndpoints, *foundEndpointsSize, paths[i])) {
-            foundEndpoints[*foundEndpointsSize] = paths[i];
-            *foundEndpointsSize = *foundEndpointsSize + 1;
+//            foundEndpoints[*foundEndpointsSize] = paths[i];
+//            *foundEndpointsSize = *foundEndpointsSize + 1;
             score++;
         } else {
             score += findPath(paths[i], target+1, map, foundEndpoints, foundEndpointsSize);
