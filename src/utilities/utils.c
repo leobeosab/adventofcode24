@@ -40,3 +40,14 @@ void printArr(int* arr, size_t size) {
     }
     printf("\n");
 }
+
+
+void printArrInGrid(int* arr, size_t size, int rowSize) {
+    for ( int i = 0; i < size; i++ ) {
+        if ( i % rowSize == 0 ) {
+            printf("\n");
+        }
+        printf("%d", arr[i]);
+    }
+    printf("\n");
+}
