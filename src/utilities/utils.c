@@ -1,3 +1,4 @@
+#include "utils.h"
 #include <stdio.h>
 #include <assert.h>
 #define BUFF_SIZE 65536
@@ -51,3 +52,14 @@ void printArrInGrid(int* arr, size_t size, int rowSize) {
     }
     printf("\n");
 }
+
+int intNotInArr(int* arr, size_t size, int target) {
+    for ( int i = 0; i < size; i++) {
+        if ( arr[i] == target ) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+

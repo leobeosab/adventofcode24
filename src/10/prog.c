@@ -13,7 +13,7 @@ typedef struct {
     size_t startSize;
 } TrailMap;
 
-int findPath( int* indexes, int indexSize, int target, TrailMap* map );
+int findPath( int index, int target, TrailMap* map, int* foundEndpoints, int* foundEndpointsSize );
 
 int main() {
     FILE *fp;
@@ -25,8 +25,8 @@ int main() {
     }
 
     char lineBuffer[255];
-    size_t size = 64;
-    size_t startSize = 64;
+    size_t size = 3000;
+    size_t startSize = 2048;
     int c_rows = 0;
     int c_columns = 0;
     int c_trailSize = 0;
@@ -40,7 +40,7 @@ int main() {
             // check if our array is at its max size
             if ( c_trailSize == size ) {
                 size *= 2;
-                int* temp = realloc(trail, size * sizeof *trail);
+                int* temp = realloc(trail, size * sizeof(int));
                 assert ( temp != NULL );
             }
 
@@ -58,7 +58,7 @@ int main() {
                 // make room on array if need be
                 if ( c_starts == startSize ) {
                     startSize *= 2;
-                    int* temp = realloc(starts, size * sizeof *starts);
+                    int* temp = realloc(starts, startSize * sizeof (int));
                     assert ( temp != NULL );
                 }
                 
@@ -80,9 +80,14 @@ int main() {
     int trailScore = 0;
     for ( int i = 0; i < map.startSize; i++ ) {
         // start each path at 0, with a target of 1
-        trailScore += findPath( (int[]) { map.startLocations[i] }, 1, 1, &map);
-        break;
+        int* foundEndpoints = malloc ( 4000 * sizeof ( int ) );
+        int foundEndpointsSize = 0;
+        int score = findPath( map.startLocations[i], 1, &map, foundEndpoints, &foundEndpointsSize) ;
+        printf("Score: %d \n", score);
+        trailScore += score;
+        free(foundEndpoints);
     }
+
 
     printf("trail score: %d \n", trailScore);
 
@@ -90,55 +95,56 @@ int main() {
     return 0;
 }
 
-int findPath( int* indexes, int indexSize, int target, TrailMap* map) {
+int findPath( int index, int target, TrailMap* map, int* foundEndpoints, int* foundEndpointsSize) {
     int paths[4];
     int pathCount = 0;
 
-    for ( int i = 0; i < indexSize; i++ ) {
-        // Setup positions for checking bounds
-        int index = indexes[i];
-        int columnPos = index % map->width;
-        int rowPos = index / map->height;
+    // Setup positions for checking bounds
+    int columnPos = index % map->width;
+    int rowPos = index / map->height;
 
-        printf("finding path from %d looking for %d\n", map->trail[index], target);
-        printf("startX: %d, startY: %d\n", columnPos, rowPos);
+    printf("finding path from %d looking for %d\n", map->trail[index], target);
+    printf("startX: %d, startY: %d\n", columnPos, rowPos);
 
-        int isLeftBlocked = rowPos == 0;
-        int isRightBlocked = rowPos == map->width;
-        int isUpBlocked = columnPos == 0;
-        int isDownBlocked = columnPos == map->height;
+    int isLeftBlocked = columnPos == 0;
+    int isRightBlocked = columnPos == map->width - 1;
+    int isUpBlocked = rowPos == 0;
+    int isDownBlocked = rowPos == map->height - 1;
 
-        if ( !isLeftBlocked && map->trail[index - 1] == target ) {
-            printf("found left!\n");
-            paths[pathCount] = index-1;
-            pathCount++;
-        }
+    printf("is up blocked: %d\n", isUpBlocked);
 
-        if ( !isRightBlocked && map->trail[index + 1] == target ) {
-            printf("found right!\n");
-            paths[pathCount] = index+1;
-            pathCount++;
-        }
+    if ( !isLeftBlocked && map->trail[index - 1] == target ) {
+        printf("found left!\n");
+        paths[pathCount] = index-1;
+        pathCount++;
+    }
 
-        if ( !isUpBlocked && map->trail[index - map->width] == target ) {
-            printf("found up!\n");
-            paths[pathCount] = index-map->width;
-            pathCount++;
-        }
+    if ( !isRightBlocked && map->trail[index + 1] == target ) {
+        printf("found right!\n");
+        paths[pathCount] = index+1;
+        pathCount++;
+    }
 
-        if ( !isDownBlocked && map->trail[index + map->width] == target ) {
-            printf("found down!\n");
-            paths[pathCount] = index+map->width;
-            pathCount++;
-        }
+    if ( !isUpBlocked && map->trail[index - map->width] == target ) {
+        printf("found up!\n");
+        paths[pathCount] = index-map->width;
+        pathCount++;
+    }
+
+    if ( !isDownBlocked && map->trail[index + map->width] == target ) {
+        printf("found down!\n");
+        paths[pathCount] = index+map->width;
+        pathCount++;
     }
 
     int score = 0;
     for ( int i = 0; i < pathCount; i++ ) {
-        if ( target == 9 ) {
+        if ( target == 9 && intNotInArr(foundEndpoints, *foundEndpointsSize, paths[i])) {
+            foundEndpoints[*foundEndpointsSize] = paths[i];
+            *foundEndpointsSize = *foundEndpointsSize + 1;
             score++;
         } else {
-            score += findPath(paths, pathCount, target+1, map);
+            score += findPath(paths[i], target+1, map, foundEndpoints, foundEndpointsSize);
         }
     }
 
