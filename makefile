@@ -4,6 +4,9 @@ RM = rm -rf
 
 all: build-one
 
+build-eleven:
+	$(CC) $(CFLAGS) -o bin/11-1 src/11/prog.c src/utilities/*.c
+
 build-ten:
 	$(CC) $(CFLAGS) -o bin/10-1 src/10/prog.c src/utilities/*.c
 	$(CC) $(CFLAGS) -o bin/10-2 src/10/prog2.c src/utilities/*.c
