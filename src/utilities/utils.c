@@ -74,26 +74,56 @@ void printList(DoublyLinkedList* list) {
 
     printf("List: ");
 
+    fflush(stdout);
     while ( curr != NULL ) {
-        printf("%d ", curr->data);
+        printf("%ld ", curr->data);
         curr = curr->next;
     }
 
     printf("\n");
 }
 
-DoublyLinkedList* createList(int* data, int dataCount) {
-    DoublyLinkedList* list = (DoublyLinkedList*) malloc(sizeof(DoublyLinkedList));
+Node* createNode(long data) {
+    struct Node *newNode = (Node *) malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+
+    return newNode;
+}
+
+void freeList(DoublyLinkedList* list) {
+    Node* head = list->head;
+    Node* tmp;
+
+    while ( head != NULL ) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+
+    free(list);
+}
+
+DoublyLinkedList* createEmptyList() {
+    DoublyLinkedList* list = (DoublyLinkedList *) malloc(sizeof(DoublyLinkedList));
+    list->head = NULL;
+    list->end = NULL;
+    list->count = 0;
+    return list;
+}
+
+DoublyLinkedList* createList(long* data, int dataCount) {
+    DoublyLinkedList* list = createEmptyList();
 
     if ( dataCount < 1 ) {
-        printf("Empty count \n");
-        return NULL;
+        printf("Empty count returning empty list\n");
+        return list;
     }
 
     Node* last;
     for ( int i = 0; i < dataCount; i++ ) {
-        Node *node = (Node*) malloc(sizeof(Node)); 
-        node->data = data[i];
+        Node* node = createNode(data[i]); 
         if ( last == NULL ) {
             list->head = node;
         }
@@ -113,9 +143,8 @@ DoublyLinkedList* createList(int* data, int dataCount) {
     return list;
 }
 
-Node* appendNode(DoublyLinkedList* list, int data) {
-    Node* node = (Node*) malloc(sizeof(Node));
-    node->data = data;
+Node* appendNode(DoublyLinkedList* list, long data) {
+    Node* node = createNode(data);
     
     Node* end = list->end;
     if ( end == NULL ) {
@@ -132,7 +161,7 @@ Node* appendNode(DoublyLinkedList* list, int data) {
     return node;
 }
 
-Node* prependNode(DoublyLinkedList* list, int data) {
+Node* prependNode(DoublyLinkedList* list, long data) {
     Node* node = (Node*) malloc(sizeof(Node));
     node->data = data;
     
@@ -151,7 +180,7 @@ Node* prependNode(DoublyLinkedList* list, int data) {
     return node;
 }
 
-Node* insertAtPosition(DoublyLinkedList* list, int pos, int data) {
+Node* insertAtPosition(DoublyLinkedList* list, int pos, long data) {
     if ( pos == 0 ) {
         return prependNode(list, data);
     }

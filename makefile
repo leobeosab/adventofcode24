@@ -1,5 +1,5 @@
 CC	= gcc
-CFLAGS = -g
+CFLAGS = -g -fsanitize=address
 RM = rm -rf
 
 all: build-one
